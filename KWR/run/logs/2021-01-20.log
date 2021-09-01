@@ -1,0 +1,48 @@
+[92m2021-01-20 15:03:56 I/Net 692928873: Connected to server 114.221.148.59:14000[0m
+[0m2021-01-20 15:03:56 V/Net 692928873: Send: wtlogin.login[0m
+[0m2021-01-20 15:03:59 V/Net 692928873: Recv: LoginPacketResponse.Success[0m
+[92m2021-01-20 15:03:59 I/Net 692928873: Login successful[0m
+[0m2021-01-20 15:04:00 V/Net 692928873: Send: StatSvc.register[0m
+[0m2021-01-20 15:04:00 V/Net 692928873: Recv: Response(StatSvc.register)[0m
+[0m2021-01-20 15:04:00 V/Net 692928873: Send: StatSvc.GetDevLoginInfo[0m
+[0m2021-01-20 15:04:01 V/Net 692928873: Recv: StatSvc.GetDevLoginInfo.Response(deviceList.size=1)[0m
+[92m2021-01-20 15:04:02 I/Net 692928873: Start loading stranger list...[0m
+[92m2021-01-20 15:04:02 I/Net 692928873: Start loading friend list...[0m
+[92m2021-01-20 15:04:02 I/Net 692928873: Start loading group list...[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Send: friendlist.GetTroopListReqV2[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Send: OidbSvc.0x5d2_0[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Send: friendlist.getFriendGroupList[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Recv: network.protocol.packet.list.StrangerList$GetStrangerList$Response@649b3164[0m
+[92m2021-01-20 15:04:02 I/Net 692928873: Successfully loaded stranger list: 0 in total[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Recv: FriendList.GetFriendGroupList.Response[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Recv: FriendList.GetFriendGroupList.Response[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Send: friendlist.GetTroopMemberListReq[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Send: friendlist.GetTroopMemberListReq[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Send: friendlist.GetTroopMemberListReq[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Send: friendlist.GetTroopMemberListReq[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Send: friendlist.GetTroopMemberListReq[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Send: friendlist.GetTroopMemberListReq[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Send: friendlist.GetTroopMemberListReq[0m
+[0m2021-01-20 15:04:02 V/Net 692928873: Loading friend list: 8/8[0m
+[0m2021-01-20 15:04:03 V/Net 692928873: Recv: FriendList.GetTroopMemberList.Response[0m
+[92m2021-01-20 15:04:03 I/Net 692928873: Successfully loaded friend list: 8 in total[0m
+[0m2021-01-20 15:04:03 V/Net 692928873: Recv: FriendList.GetTroopMemberList.Response[0m
+[0m2021-01-20 15:04:03 V/Net 692928873: Recv: FriendList.GetTroopMemberList.Response[0m
+[0m2021-01-20 15:04:03 V/Net 692928873: Recv: FriendList.GetTroopMemberList.Response[0m
+[0m2021-01-20 15:04:03 V/Net 692928873: Recv: FriendList.GetTroopMemberList.Response[0m
+[0m2021-01-20 15:04:04 V/Net 692928873: Recv: FriendList.GetTroopMemberList.Response[0m
+[0m2021-01-20 15:04:04 V/Net 692928873: Recv: FriendList.GetTroopMemberList.Response[0m
+[0m2021-01-20 15:04:04 V/Net 692928873: Recv: ConfigPushSvc.PushReq.PushReqResponse.Success[0m
+[0m2021-01-20 15:04:04 V/Net 692928873: Send: friendlist.GetTroopMemberListReq[0m
+[0m2021-01-20 15:04:04 V/Net 692928873: Recv: ConfigPushSvc.PushReq.PushReqResponse.Success[0m
+[96m2021-01-20 15:04:04 D/Net 692928873: Received unknown commandName: ConfigPushSvc.PushDomain[0m
+[0m2021-01-20 15:04:04 V/Net 692928873: Send: ConfigPushSvc.PushResp[0m
+[0m2021-01-20 15:04:04 V/Net 692928873: Send: ConfigPushSvc.PushResp[0m
+[0m2021-01-20 15:04:04 V/Net 692928873: Recv: FriendList.GetTroopMemberList.Response[0m
+[92m2021-01-20 15:04:04 I/Net 692928873: Successfully loaded group list: 7 in total.[0m
+[92m2021-01-20 15:04:04 I/Net 692928873: Syncing friend message history...[0m
+[92m2021-01-20 15:04:04 I/Net 692928873: Awaiting ConfigPushSvc.PushReq.[0m
+[0m2021-01-20 15:04:04 V/Net 692928873: Send: MessageSvc.PbGetMsg[0m
+[92m2021-01-20 15:04:05 I/Net 692928873: Syncing friend message history: Success.[0m
+[96m2021-01-20 15:04:10 D/Net 692928873: Received unknown commandName: QualityTest.PushList[0m
+[92m2021-01-20 15:04:14 I/Net 692928873: Missing ConfigPushSvc.PushReq.[0m

@@ -1,0 +1,75 @@
+toolgood/words/WordsHelper.java
+ toolgood.words.WordsHelper
+toolgood/words/StringMatch.java
+ toolgood.words.StringMatch
+toolgood/words/NumHelper.java
+ toolgood.words.NumHelper
+ toolgood.words.NumHelper$Deserializer
+ toolgood.words.NumHelper$SerializableType
+ toolgood.words.NumHelper$Serializer
+toolgood/words/IllegalWordsSearchResult.java
+ toolgood.words.IllegalWordsSearchResult
+toolgood/words/internals/TrieNode2.java
+ toolgood.words.internals.TrieNode2
+toolgood/words/IllegalWordsSearch.java
+ toolgood.words.IllegalWordsSearch
+ toolgood.words.IllegalWordsSearch$CharTranslateHandler
+ toolgood.words.IllegalWordsSearch$SkipWordFilterHandler
+ toolgood.words.IllegalWordsSearch$StringMatchHandler
+toolgood/words/PinyinMatch.java
+ toolgood.words.PinyinMatch
+toolgood/words/internals/TwoTuple.java
+ toolgood.words.internals.TwoTuple
+toolgood/words/internals/BaseMatchEx.java
+ toolgood.words.internals.BaseMatchEx
+toolgood/words/internals/BaseSearchEx.java
+ toolgood.words.internals.BaseSearchEx
+toolgood/words/WordsSearchEx2.java
+ toolgood.words.WordsSearchEx2
+toolgood/words/WordsSearchEx.java
+ toolgood.words.WordsSearchEx
+toolgood/words/internals/BasePinyinMatch.java
+ toolgood.words.internals.BasePinyinMatch
+ toolgood.words.internals.BasePinyinMatch$PinyinSearch
+ toolgood.words.internals.BasePinyinMatch$TextLine
+ toolgood.words.internals.BasePinyinMatch$TextNode
+toolgood/words/internals/TrieNode.java
+ toolgood.words.internals.TrieNode
+toolgood/words/internals/TrieNode2Ex.java
+ toolgood.words.internals.TrieNode2Ex
+toolgood/words/WordsMatch.java
+ toolgood.words.WordsMatch
+toolgood/words/internals/IntDictionary.java
+ toolgood.words.internals.IntDictionary
+toolgood/words/internals/BaseSearchEx2.java
+ toolgood.words.internals.BaseSearchEx2
+toolgood/words/StringSearchEx2.java
+ toolgood.words.StringSearchEx2
+toolgood/words/internals/TrieNode3Ex.java
+ toolgood.words.internals.TrieNode3Ex
+toolgood/words/StringSearchEx.java
+ toolgood.words.StringSearchEx
+toolgood/words/StringMatchEx.java
+ toolgood.words.StringMatchEx
+toolgood/words/PinyinMatch2.java
+ toolgood.words.PinyinMatch2
+toolgood/words/internals/BaseSearch.java
+ toolgood.words.internals.BaseSearch
+toolgood/words/internals/TrieNodeEx.java
+ toolgood.words.internals.TrieNodeEx
+toolgood/words/internals/Translate.java
+ toolgood.words.internals.Translate
+toolgood/words/internals/BaseMatch.java
+ toolgood.words.internals.BaseMatch
+toolgood/words/StringSearch.java
+ toolgood.words.StringSearch
+toolgood/words/WordsSearchResult.java
+ toolgood.words.WordsSearchResult
+toolgood/words/internals/PinyinDict.java
+ toolgood.words.internals.PinyinDict
+toolgood/words/WordsSearch.java
+ toolgood.words.WordsSearch
+toolgood/words/internals/TrieNode3.java
+ toolgood.words.internals.TrieNode3
+toolgood/words/WordsMatchEx.java
+ toolgood.words.WordsMatchEx
