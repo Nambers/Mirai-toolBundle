@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2020 - 2021. Eritque arcus and contributors.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or any later version(in your opinion).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 package tech.eritquearcus.mirai.plugin.rkw
 
 import com.baidu.aip.ocr.AipOcr
@@ -15,10 +32,10 @@ import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.source
 import org.json.JSONArray
 import org.json.JSONObject
+import toolgood.words.StringSearchEx2
 import java.io.File
 import java.net.URL
 import java.util.zip.GZIPInputStream
-import toolgood.words.StringSearchEx2
 
 
 object Ocr {
@@ -26,6 +43,7 @@ object Ocr {
     internal var APP_ID = ""
     internal var API_KEY = ""
     internal var SECRET_KEY = ""
+
     // 初始化一个AipOcr
     private val client by lazy{ AipOcr(APP_ID, API_KEY, SECRET_KEY) }
 
@@ -74,6 +92,7 @@ object PluginMain : KotlinPlugin(
     )
 ) {
     private var seachers: ArrayList<StringSearchEx2> = ArrayList()
+
     //图片结果缓存
     private var imgCache: Map<String, String> = mapOf()
     override fun onEnable() {
