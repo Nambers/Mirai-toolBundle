@@ -100,7 +100,7 @@ object PluginMain : KotlinPlugin(
         val f = File(dataFolder.absolutePath + "/config.json").let {
             if(!it.isFile || !it.exists()) {
                 logger.error("配置文件(${it.absolutePath})不存在, 自动生成并结束加载插件")
-                it.writeText(Gson().toJson(Config(true, false, null, false, 5, emptyList())))
+                it.writeText(Gson().toJson(Config(true, false, null, false, 5, listOf(emptyList()))))
                 return
             } else
                 it
