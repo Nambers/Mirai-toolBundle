@@ -7,4 +7,4 @@ pluginManagement {
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
 }
-rootProject.name = "KWR"
+rootProject.name = "rkw"

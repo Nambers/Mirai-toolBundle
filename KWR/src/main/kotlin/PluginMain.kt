@@ -1,10 +1,9 @@
-package tech.eritquearcus.mirai.plugin.kwr
+package tech.eritquearcus.mirai.plugin.rkw
 
 import com.baidu.aip.ocr.AipOcr
 import com.google.gson.Gson
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
-import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.globalEventChannel
@@ -16,31 +15,31 @@ import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.source
 import org.json.JSONArray
 import org.json.JSONObject
-import toolgood.words.StringSearch
 import java.io.File
 import java.net.URL
 import java.util.zip.GZIPInputStream
+import toolgood.words.StringSearchEx2
 
 
 object Ocr {
-    //ÉèÖÃAPPID/AK/SK
+    //è®¾ç½®APPID/AK/SK
     internal var APP_ID = ""
     internal var API_KEY = ""
     internal var SECRET_KEY = ""
-    // ³õÊ¼»¯Ò»¸öAipOcr
+    // åˆå§‹åŒ–ä¸€ä¸ªAipOcr
     private val client by lazy{ AipOcr(APP_ID, API_KEY, SECRET_KEY) }
 
-    // ¿ÉÑ¡£ºÉèÖÃÍøÂçÁ¬½Ó²ÎÊı
+    // å¯é€‰ï¼šè®¾ç½®ç½‘ç»œè¿æ¥å‚æ•°
 //    client.setConnectionTimeoutInMillis(2000)
 //    client.setSocketTimeoutInMillis(60000)
     @JvmStatic
     fun main(image:String): String {
-        // ´«Èë¿ÉÑ¡²ÎÊıµ÷ÓÃ½Ó¿Ú
+        // ä¼ å…¥å¯é€‰å‚æ•°è°ƒç”¨æ¥å£
         val options = HashMap<String, String>()
         options["detect_direction"] = "true"
         options["probability"] = "true"
 
-        // ²ÎÊıÎª±¾µØÍ¼Æ¬Â·¾¶
+        // å‚æ•°ä¸ºæœ¬åœ°å›¾ç‰‡è·¯å¾„
         val res = this.client.basicGeneral(image, options)
         val obj = JSONObject(res.toString(2))
         var temp = ""
@@ -52,12 +51,12 @@ object Ocr {
     }
 }
 
-//ÏÂÔØÍ¼Æ¬
+//ä¸‹è½½å›¾ç‰‡
 fun downloadImage(url: String, file: File): File {
     val openConnection = URL(url).openConnection()
-    //·ÀÖ¹Ä³Ğ©ÍøÕ¾Ìø×ªµ½ÑéÖ¤½çÃæ
+    //é˜²æ­¢æŸäº›ç½‘ç«™è·³è½¬åˆ°éªŒè¯ç•Œé¢
     openConnection.addRequestProperty("user-agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36")
-    //Èç¹ûÍ¼Æ¬ÊÇ²ÉÓÃgzipÑ¹Ëõ
+    //å¦‚æœå›¾ç‰‡æ˜¯é‡‡ç”¨gzipå‹ç¼©
     val bytes = if (openConnection.contentEncoding == "gzip") {
         GZIPInputStream(openConnection.getInputStream()).readBytes()
     } else {
@@ -67,27 +66,24 @@ fun downloadImage(url: String, file: File): File {
     return file
 }
 
-//ÑéÖ¤ÊÇ²»ÊÇqÈº¹Ü¼Ò
-fun verifyQQbot(sender: Member):Boolean{
-    return (sender.nameCard == "QÈº¹Ü¼Ò" || sender.id == 2854196310)
-}
-
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
-        id = "tech.eritquearcus.KWR",
-        name="³·»Ø",
-        version = "1.2.0"
+        id = "tech.eritquearcus.RKW",
+        name="RecallKeyWords",
+        version = "1.3.0"
     )
 ) {
-    private var seachers: ArrayList<StringSearch> = ArrayList()
-    //Í¼Æ¬½á¹û»º´æ
+    private var seachers: ArrayList<StringSearchEx2> = ArrayList()
+    //å›¾ç‰‡ç»“æœç¼“å­˜
     private var imgCache: Map<String, String> = mapOf()
     override fun onEnable() {
         logger.info("Keywords recall plugin loaded!")
         val f = File(dataFolder.absolutePath + "/config.json").let {
-            if(!it.isFile || !it.exists())
+            if(!it.isFile || !it.exists()) {
+                logger.error("é…ç½®æ–‡ä»¶(${it.absolutePath})ä¸å­˜åœ¨, è‡ªåŠ¨ç”Ÿæˆå¹¶ç»“æŸåŠ è½½æ’ä»¶")
+                it.writeText(Gson().toJson(Config(true, false, null, false, 5, emptyList())))
                 return
-            else
+            } else
                 it
         }
         val config = Gson().fromJson(f.readText(), Config::class.java)
@@ -99,36 +95,32 @@ object PluginMain : KotlinPlugin(
             config.notification = false
         if(config.readPic!!)
             if(config.baiduSetting == null){
-                logger.error("°Ù¶ÈocrÎ´ÉèÖÃ, ¶ÁÈ¡Í¼Æ¬¿ª¹Ø¹Ø±Õ")
+                logger.error("ç™¾åº¦ocræœªè®¾ç½®, è¯»å–å›¾ç‰‡å¼€å…³å…³é—­")
                 config.readPic = false
             }else{
                 Ocr.API_KEY = config.baiduSetting.API_KEY
                 Ocr.APP_ID = config.baiduSetting.APP_ID
                 Ocr.SECRET_KEY = config.baiduSetting.SECRET_KEY
             }
-        logger.info("ÅäÖÃÎÄ¼şÂ·¾¶${dataFolder.absolutePath}/config.txt")
-        logger.info("ÎÄ×ÖÊ¶±ğ¿ª¹Ø${config.readText}")
-        logger.info("Í¼Æ¬Ê¶±ğ¿ª¹Ø${config.readPic}")
-        logger.info("³·»Ø±ß½çÖµ${config.MaxBorder}")
-        logger.info("Ä¿Ç°¹Ø¼ü´ÊÓĞ:${config.keyWords}")
+        logger.info("é…ç½®æ–‡ä»¶è·¯å¾„${dataFolder.absolutePath}/config.txt")
+        logger.info("æ–‡å­—è¯†åˆ«å¼€å…³${config.readText}")
+        logger.info("å›¾ç‰‡è¯†åˆ«å¼€å…³${config.readPic}")
+        logger.info("æ’¤å›è¾¹ç•Œå€¼${config.MaxBorder}")
+        logger.info("ç›®å‰å…³é”®è¯æœ‰:${config.keyWords}")
         for(a in config.keyWords){
-            val tmp = StringSearch()
+            val tmp = StringSearchEx2()
             tmp.SetKeywords(a)
             seachers.add(tmp)
         }
         if(!File(dataFolder.absolutePath + "/Imgcache/").exists())
             File(dataFolder.absolutePath + "/Imgcache/").mkdir()
         globalEventChannel().subscribeAlways<GroupMessageEvent> {
-            //QQ¹Ü¼Ò
-            if (verifyQQbot(sender)) return@subscribeAlways
-
             var plainAll = ""
             var picAll = ""
-            //ÓĞ±¾ÈºÍøÖ·£¬²»¼ÌĞøÖ´ĞĞ
             message.forEach {
                 if (it is PlainText && config.readText!!) plainAll += it.contentToString()
                 if (it is Image && config.readPic!!) {
-                    //Í¼Æ¬´¦Àí
+                    //å›¾ç‰‡å¤„ç†
                     val id = it.imageId.split(".")[0]
                     val value = imgCache[id]
                     if (value != null) {
@@ -136,16 +128,16 @@ object PluginMain : KotlinPlugin(
                         logger.info(picAll)
                     } else {
                         val url = it.queryUrl()
-                        logger.info("È¡µ½Í¼Æ¬${url}")
-                        //ÓÃBinaryTest.Excute()À´¶şÖµ»¯
+                        logger.info("å–åˆ°å›¾ç‰‡${url}")
+                        //ç”¨BinaryTest.Excute()æ¥äºŒå€¼åŒ–
                         val temp: File = downloadImage(url, File(dataFolder.absolutePath + "/Imgcache/$id.jpg"))
                         val tempa = Ocr.main(dataFolder.absolutePath + "/Imgcache/$id.jpg")
-                            .replace("\n", "")//È¡Ïû»»ĞĞ
-                            .replace(" ", "")//È¡Ïû¿Õ¸ñ
-                        logger.info("½á¹û$tempa")
+                            .replace("\n", "")//å–æ¶ˆæ¢è¡Œ
+                            .replace(" ", "")//å–æ¶ˆç©ºæ ¼
+                        logger.info("ç»“æœ$tempa")
                         imgCache = imgCache.plus(mapOf(id to tempa))
                         picAll += tempa
-                        //×Ô¶¯É¾³ıÍ¼Æ¬»º´æ
+                        //è‡ªåŠ¨åˆ é™¤å›¾ç‰‡ç¼“å­˜
                         temp.delete()
                     }
                 }
@@ -160,12 +152,12 @@ object PluginMain : KotlinPlugin(
                         try {
                             message.source.recall()
                         } catch (e: PermissionDeniedException) {
-                            logger.warning("³·»ØÊ§°Ü:»úÆ÷ÈËÎŞÈ¨ÏŞ")
+                            logger.warning("æ’¤å›å¤±è´¥:æœºå™¨äººæ— æƒé™")
                         } catch (e: IllegalStateException) {
-                            logger.warning("³·»ØÊ§°Ü:ÏûÏ¢ÒÑ³·»Ø»ò¶Ô·½È¨ÏŞ±Èbot»¹¸ß")
+                            logger.warning("æ’¤å›å¤±è´¥:æ¶ˆæ¯å·²æ’¤å›æˆ–å¯¹æ–¹æƒé™æ¯”botè¿˜é«˜")
                         }
                         if(config.notification!!)
-                            this.group.owner.sendMessage(MiraiCode.deserializeMiraiCode("[QQÈº${this.group.id}]³·»ØÎ¥¹æĞÅÏ¢[${this.message.serializeToMiraiCode()}]À´×ÔÈº³ÉÔ±[${this.sender.id}]"))
+                            this.group.owner.sendMessage(MiraiCode.deserializeMiraiCode("[ç¾¤${this.group.id}]æ’¤å›è¿è§„ä¿¡æ¯[${this.message.serializeToMiraiCode()}]æ¥è‡ªç¾¤æˆå‘˜[${this.sender.id}]"))
                         return@subscribeAlways
                     }
                 }

@@ -1,5 +1,8 @@
-package tech.eritquearcus.mirai.plugin.rkw
-
+# 关键词撤回插件
+配置几组不同权值的关键词和撤回阈值, 当一条消息权值累计超过阈值就撤回
+因为是很早前写的了, 可能维护不会太频繁
+## 配置文件
+```kotlin
 data class Config(
     // 是否分析文本
     var readText: Boolean?,
@@ -21,3 +24,8 @@ data class Config(
         val SECRET_KEY:String
     )
 }
+```
+## 依赖
+[ToolGood.Words - StringSearchEx2](https://github.com/toolgood/ToolGood.Words) 提取关键词 -  Apache-2.0 License
+
+[gson](https://github.com/google/gson) - Apache-2.0 License

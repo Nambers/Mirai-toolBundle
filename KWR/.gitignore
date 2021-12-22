@@ -1,0 +1,6 @@
+bots/
+.idea/
+.gradle/
+config/
+data/
+plugins/
