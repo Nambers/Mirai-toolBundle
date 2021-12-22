@@ -1,5 +1,6 @@
 # Mirai-toolBundle
-Mirai的关键词撤回插件和刷屏撤回插件(文档WIP)
+Mirai的关键词撤回插件(缩写rkw)和刷屏撤回插件(所需PFS, 文档WIP)
+因为是很早前写的可能维护不会很频繁
 
 ## 使用教程
 
