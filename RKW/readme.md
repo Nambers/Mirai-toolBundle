@@ -28,6 +28,19 @@ data class Config(
     )
 }
 ```
+示例配置文件:
+```
+// 下面的 `//` 只是解释作用, 实际上的json不能出现注释
+{
+  "readText": true, // 检查文本信息
+  "notification": false, // 不提醒群主
+  "MaxBorder": 5, // 权值累计超过5就撤回
+  "keyWords": [
+    [a, b, c], // 权重为1的关键词组
+    [dddadas] // 权值为2
+  ]
+}
+```
 ## 依赖
 [ToolGood.Words - StringSearchEx2](https://github.com/toolgood/ToolGood.Words) 提取关键词 -  Apache-2.0 License
 
