@@ -11,16 +11,20 @@ data class Config(
     val baiduSetting: BaiduSetting?,
     // 撤回的时候通知群主
     var notification: Boolean?,
+    // 取消bot自己发送的消息如果超出阈值
+    val recallItSelf: Boolean?,
     // 撤回阈值, 权值累计到多少就撤回
     val MaxBorder: Int,
+    // 不处理群聊信息
+    val blockGroupMessage: Boolean?,
     // 撤回的关键词, 每组关键词的权值=该组的下标
     var keyWords: List<List<String>>
-){
+) {
     // 百度云OCR设置
     data class BaiduSetting(
-        val APP_ID:String,
-        val API_KEY:String,
-        val SECRET_KEY:String
+        val APP_ID: String,
+        val API_KEY: String,
+        val SECRET_KEY: String
     )
 }
 ```

@@ -70,7 +70,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "tech.eritquearcus.RKW",
         name = "RecallKeyWords",
-        version = "1.3.0"
+        version = "1.3.1"
     )
 ) {
     var seachers: ArrayList<StringSearchEx2> = ArrayList()
