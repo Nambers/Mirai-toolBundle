@@ -68,9 +68,7 @@ object Ocr {
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
-        id = "tech.eritquearcus.RKW",
-        name = "RecallKeyWords",
-        version = "1.3.1"
+        id = "tech.eritquearcus.RKW", name = "RecallKeyWords", version = "1.4"
     )
 ) {
     var seachers: ArrayList<StringSearchEx2> = ArrayList()
@@ -83,27 +81,28 @@ object PluginMain : KotlinPlugin(
         val f = File(dataFolder.absolutePath + "/config.json").let {
             if (!it.isFile || !it.exists()) {
                 logger.error("配置文件(${it.absolutePath})不存在, 自动生成并结束加载插件")
-                it.writeText(Gson().toJson(Config(true, false, null, false, false, 5, false, listOf(emptyList()))))
+                it.writeText(
+                    Gson().toJson(
+                        Config(
+                            true, false, null, false, false, 5, false, listOf(emptyList()), 0, null
+                        )
+                    )
+                )
                 return
-            } else
-                it
+            } else it
         }
         config = Gson().fromJson(f.readText(), Config::class.java)
-        if (config.readPic == null)
+        config.readPic = config.readPic ?: false
+        config.readText = config.readText ?: false
+        config.notification = config.notification ?: false
+        if (config.readPic!!) if (config.baiduSetting == null) {
+            logger.error("百度ocr未设置, 读取图片开关关闭")
             config.readPic = false
-        if (config.readText == null)
-            config.readText = false
-        if (config.notification == null)
-            config.notification = false
-        if (config.readPic!!)
-            if (config.baiduSetting == null) {
-                logger.error("百度ocr未设置, 读取图片开关关闭")
-                config.readPic = false
-            } else {
-                Ocr.API_KEY = config.baiduSetting!!.API_KEY
-                Ocr.APP_ID = config.baiduSetting!!.APP_ID
-                Ocr.SECRET_KEY = config.baiduSetting!!.SECRET_KEY
-            }
+        } else {
+            Ocr.API_KEY = config.baiduSetting!!.API_KEY
+            Ocr.APP_ID = config.baiduSetting!!.APP_ID
+            Ocr.SECRET_KEY = config.baiduSetting!!.SECRET_KEY
+        }
         logger.info("配置文件路径${dataFolder.absolutePath}/config.txt")
         logger.info("文字识别开关${config.readText}")
         logger.info("图片识别开关${config.readPic}")
@@ -114,32 +113,35 @@ object PluginMain : KotlinPlugin(
             tmp.SetKeywords(a)
             seachers.add(tmp)
         }
-        if (!File(dataFolder.absolutePath + "/Imgcache/").exists())
-            File(dataFolder.absolutePath + "/Imgcache/").mkdir()
-        if (config.recallItSelf == true)
-            GlobalEventChannel.subscribeAlways<MessagePreSendEvent> {
-                if (config.readText!! || config.readPic!!) {
-                    if (this.message.toMessageChain().toText().excessBorder()) {
-                        logger.info("取消:${this.message.contentToString()}的发送(可能下面会抛出异常)")
-                        this.cancel()
-                    }
+        if (!File(dataFolder.absolutePath + "/Imgcache/").exists()) File(dataFolder.absolutePath + "/Imgcache/").mkdir()
+        if (config.recallItSelf == true) GlobalEventChannel.subscribeAlways<MessagePreSendEvent> {
+            if (config.readText!! || config.readPic!!) {
+                if (this.message.toMessageChain().toText().excessBorder()) {
+                    logger.info("取消:${this.message.contentToString()}的发送(可能下面会抛出异常)")
+                    this.cancel()
                 }
             }
-        if (config.blockGroupMessage != true)
-            GlobalEventChannel.subscribeAlways<GroupMessageEvent> {
-                if (config.readText!! || config.readPic!!) {
-                    if (this.message.toText().excessBorder()) {
-                        try {
-                            message.source.recall()
-                        } catch (e: PermissionDeniedException) {
-                            logger.warning("撤回失败:机器人无权限")
-                        } catch (e: IllegalStateException) {
-                            logger.warning("撤回失败:消息已撤回或对方权限比bot还高")
-                        }
-                        if (config.notification!!)
-                            this.group.owner.sendMessage(MiraiCode.deserializeMiraiCode("[群${this.group.id}]撤回违规信息[${this.message.serializeToMiraiCode()}]来自群成员[${this.sender.id}]"))
+        }
+        if (config.blockGroupMessage != true) GlobalEventChannel.subscribeAlways<GroupMessageEvent> {
+            if (config.readText!! || config.readPic!!) {
+                if (this.message.toText().excessBorder()) {
+                    if ((config.type ?: 0) == 0 || (config.type ?: 0) == 1) try {
+                        message.source.recall()
+                    } catch (e: PermissionDeniedException) {
+                        logger.warning("撤回失败:机器人无权限")
+                    } catch (e: IllegalStateException) {
+                        logger.warning("撤回失败:消息已撤回或对方权限比bot还高")
                     }
+                    if ((config.type ?: 0) == 1 || (config.type ?: 0) == 2) try {
+                        sender.mute(config.muteTime ?: 60)
+                    } catch (e: PermissionDeniedException) {
+                        logger.warning("禁言失败:机器人无权限")
+                    } catch (e: IllegalStateException) {
+                        logger.error("禁言失败:禁言时间需要在0s ~ 30d, 当前是:${config.muteTime ?: 60}s")
+                    }
+                    if (config.notification!!) this.group.owner.sendMessage(MiraiCode.deserializeMiraiCode("[群${this.group.id}]撤回违规信息[${this.message.serializeToMiraiCode()}]来自群成员[${this.sender.id}]"))
                 }
             }
+        }
     }
 }

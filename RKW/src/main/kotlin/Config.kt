@@ -33,7 +33,11 @@ data class Config(
     // 不处理群聊信息
     val blockGroupMessage: Boolean?,
     // 撤回的关键词, 每组关键词的权值=该组的下标
-    var keyWords: List<List<String>>
+    var keyWords: List<List<String>>,
+    // 0 = 撤回, 1 = 禁言 + 撤回, 2 = 禁言, 默认0
+    val type: Int?,
+    // 禁言时间, 要在0s ~ 30d里面
+    val muteTime: Int?
 ){
     // 百度云OCR设置
     data class BaiduSetting(
