@@ -1,6 +1,13 @@
 # 关键词撤回插件
+
 配置几组不同权值的关键词和撤回阈值, 当一条消息权值累计超过(出现多个关键词相加大于或者重复出现多个关键词每个都算)阈值就撤回 因为是很早前写的了, 可能维护不会太频繁
+
+第一组关键词权值是1, 第二组是2, 以此类推
+
+比如关键词是: `[["a"], ["b"]]`, 撤回阈值是5 会撤回`aaaaaa`, 6个`a`(权值是6 = 6 * 1), `bbb`, 3个`b`(权值是6 = 3 * 2), 但是不会撤回`aaaaa`, 5个a(5 = 5 * 1)
+
 ## 配置文件
+
 ```kotlin
 data class Config(
     // 是否分析文本
@@ -19,7 +26,7 @@ data class Config(
     val blockGroupMessage: Boolean?,
     // 撤回的关键词, 每组关键词的权值=该组的下标
     var keyWords: List<List<String>>,
-    // 0 = 撤回, 1 = 禁言 + 撤回, 2 = 禁言, 默认0
+    // 0 = 撤回, 1 = 禁言 + 撤回, 2 = 禁言, 默认0, 其他不操作
     val type: Int?,
     // 禁言时间, 要在0s ~ 30d里面
     val muteTime: Int?
@@ -40,8 +47,8 @@ data class Config(
   "notification": false, // 不提醒群主
   "MaxBorder": 5, // 权值累计超过5就撤回
   "keyWords": [
-    [a, b, c], // 权重为1的关键词组
-    [dddadas] // 权值为2
+    ["a", "b", "c"], // 权重为1的关键词组
+    ["dddadas"] // 权值为2
   ]
 }
 ```
