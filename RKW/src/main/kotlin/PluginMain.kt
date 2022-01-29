@@ -68,8 +68,11 @@ object Ocr {
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
-        id = "tech.eritquearcus.RKW", name = "RecallKeyWords", version = "1.4"
-    )
+        id = "tech.eritquearcus.RKW", name = "RecallKeyWords", version = "1.4.0"
+    ) {
+        author("Eritque arcus")
+
+    }
 ) {
     var seachers: ArrayList<StringSearchEx2> = ArrayList()
     lateinit var config: Config

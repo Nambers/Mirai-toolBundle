@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "tech.eritquearcus"
-version = "1.4"
+version = "1.4.0"
 
 repositories {
     //国内镜像源
