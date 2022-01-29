@@ -6,6 +6,7 @@
 
 比如关键词是: `[["a"], ["b"]]`, 撤回阈值是5 会撤回`aaaaaa`, 6个`a`(权值是6 = 6 * 1), `bbb`, 3个`b`(权值是6 = 3 * 2), 但是不会撤回`aaaaa`, 5个a(5 = 5 * 1)
 
+下载: [Release](https://github.com/Nambers/Mirai-toolBundle/releases)
 ## 配置文件
 
 ```kotlin
