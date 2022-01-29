@@ -33,6 +33,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 import toolgood.words.StringSearchEx2
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayDeque
 
 
 object Ocr {
@@ -76,6 +78,7 @@ object PluginMain : KotlinPlugin(
 ) {
     var seachers: ArrayList<StringSearchEx2> = ArrayList()
     lateinit var config: Config
+    private val gid: ArrayDeque<Long> = ArrayDeque()
 
     //图片结果缓存
     var imgCache: Map<String, String> = mapOf()
@@ -86,9 +89,7 @@ object PluginMain : KotlinPlugin(
                 logger.error("配置文件(${it.absolutePath})不存在, 自动生成并结束加载插件")
                 it.writeText(
                     Gson().toJson(
-                        Config(
-                            true, false, null, false, false, 5, false, listOf(emptyList()), 0, null
-                        )
+                        Config(MaxBorder = 5, keyWords = listOf(emptyList()))
                     )
                 )
                 return
@@ -111,13 +112,24 @@ object PluginMain : KotlinPlugin(
         logger.info("图片识别开关${config.readPic}")
         logger.info("撤回边界值${config.MaxBorder}")
         logger.info("目前关键词有:${config.keyWords}")
+        logger.info("处理模式:${if (config.type == 1) "撤回 + 禁言" else if (config.type == 0 || config.type == null) "撤回" else if (config.type == 2) "禁言" else "不处理"}")
+        logger.info("自动大写:${config.autoUpper ?: false}")
         for (a in config.keyWords) {
             val tmp = StringSearchEx2()
-            tmp.SetKeywords(a)
+            if (config.autoUpper == true) {
+                val b = mutableListOf<String>()
+                a.forEach { b.add(it.uppercase(Locale.getDefault())) }
+                tmp.SetKeywords(b)
+            } else
+                tmp.SetKeywords(a)
             seachers.add(tmp)
         }
         if (!File(dataFolder.absolutePath + "/Imgcache/").exists()) File(dataFolder.absolutePath + "/Imgcache/").mkdir()
         if (config.recallItSelf == true) GlobalEventChannel.subscribeAlways<MessagePreSendEvent> {
+            if (config.notification!! && this.message.toString().startsWith("[群${gid.last()}]撤回违规信息[")) {
+                gid.removeLast()
+                return@subscribeAlways
+            }
             if (config.readText!! || config.readPic!!) {
                 if (this.message.toMessageChain().toText().excessBorder()) {
                     logger.info("取消:${this.message.contentToString()}的发送(可能下面会抛出异常)")
@@ -142,7 +154,10 @@ object PluginMain : KotlinPlugin(
                     } catch (e: IllegalStateException) {
                         logger.error("禁言失败:禁言时间需要在0s ~ 30d, 当前是:${config.muteTime ?: 60}s")
                     }
-                    if (config.notification!!) this.group.owner.sendMessage(MiraiCode.deserializeMiraiCode("[群${this.group.id}]撤回违规信息[${this.message.serializeToMiraiCode()}]来自群成员[${this.sender.id}]"))
+                    if (config.notification!!) {
+                        gid.addFirst(this.group.id)
+                        this.group.owner.sendMessage(MiraiCode.deserializeMiraiCode("[群${this.group.id}]撤回违规信息[${this.message.serializeToMiraiCode()}]来自群成员[${this.sender.id}]"))
+                    }
                 }
             }
         }

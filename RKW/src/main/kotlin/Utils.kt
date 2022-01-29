@@ -24,6 +24,7 @@ import net.mamoe.mirai.message.data.PlainText
 import tech.eritquearcus.mirai.plugin.rkw.PluginMain.config
 import java.io.File
 import java.net.URL
+import java.util.*
 import java.util.zip.GZIPInputStream
 
 //下载图片
@@ -61,8 +62,7 @@ suspend fun MessageChain.toText(): String {
                 PluginMain.logger.info("取到图片${url}")
                 //用BinaryTest.Excute()来二值化
                 val temp: File = downloadImage(url, File(PluginMain.dataFolder.absolutePath + "/Imgcache/$id.jpg"))
-                val tempa = Ocr.main(PluginMain.dataFolder.absolutePath + "/Imgcache/$id.jpg")
-                    .replace("\n", "")//取消换行
+                val tempa = Ocr.main(PluginMain.dataFolder.absolutePath + "/Imgcache/$id.jpg").replace("\n", "")//取消换行
                     .replace(" ", "")//取消空格
                 PluginMain.logger.info("结果$tempa")
                 PluginMain.imgCache = PluginMain.imgCache.plus(mapOf(id to tempa))
@@ -80,7 +80,7 @@ fun String.excessBorder(): Boolean {
     var allp = 0
     for (sc in PluginMain.seachers) {
         i += 1
-        allp += sc.FindAll(this).size * i
+        allp += sc.FindAll(if (config.autoUpper == true) this.uppercase(Locale.getDefault()) else this).size * i
         if (allp > config.MaxBorder) {
             return true
         }

@@ -17,20 +17,22 @@ data class Config(
     var readPic: Boolean?,
     // 百度云ocr配置
     val baiduSetting: BaiduSetting?,
-    // 撤回的时候通知群主
+    // 撤回的时候通知群主, 默认false
     var notification: Boolean?,
-    // 取消bot自己发送的消息如果超出阈值
+    // 取消bot自己发送的消息如果超出阈值, 默认false
     val recallItSelf: Boolean?,
     // 撤回阈值, 权值累计到多少就撤回
     val MaxBorder: Int,
-    // 不处理群聊信息
+    // 不处理群聊信息, 默认false
     val blockGroupMessage: Boolean?,
     // 撤回的关键词, 每组关键词的权值=该组的下标
     var keyWords: List<List<String>>,
     // 0 = 撤回, 1 = 禁言 + 撤回, 2 = 禁言, 默认0, 其他不操作
     val type: Int?,
-    // 禁言时间, 要在0s ~ 30d里面
-    val muteTime: Int?
+    // 禁言时间, 要在0s ~ 30d里面, 默认60s
+    val muteTime: Int?,
+    // 自动把全部英文转换成大写字母处理(包括关键词), 默认false
+    val autoUpper: Boolean?
 ) {
     // 百度云OCR设置
     data class BaiduSetting(

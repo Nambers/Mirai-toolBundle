@@ -19,25 +19,27 @@ package tech.eritquearcus.mirai.plugin.rkw
 
 data class Config(
     // 是否分析文本
-    var readText: Boolean?,
+    var readText: Boolean? = false,
     // 是否用百度云ocr api分析图片(需要在下面配置)
-    var readPic: Boolean?,
+    var readPic: Boolean? = false,
     // 百度云ocr配置
-    val baiduSetting: BaiduSetting?,
+    val baiduSetting: BaiduSetting? = null,
     // 撤回的时候通知群主
-    var notification: Boolean?,
+    var notification: Boolean? = false,
     // 取消bot自己发送的消息如果超出阈值
-    val recallItSelf: Boolean?,
+    val recallItSelf: Boolean? = false,
     // 撤回阈值, 权值累计到多少就撤回
     val MaxBorder: Int,
     // 不处理群聊信息
-    val blockGroupMessage: Boolean?,
+    val blockGroupMessage: Boolean? = false,
     // 撤回的关键词, 每组关键词的权值=该组的下标
     var keyWords: List<List<String>>,
     // 0 = 撤回, 1 = 禁言 + 撤回, 2 = 禁言, 默认0
-    val type: Int?,
+    val type: Int? = 0,
     // 禁言时间, 要在0s ~ 30d里面
-    val muteTime: Int?
+    val muteTime: Int? = 60,
+    // 全部英文转成大写字母, 默认false
+    val autoUpper: Boolean? = false
 ){
     // 百度云OCR设置
     data class BaiduSetting(
