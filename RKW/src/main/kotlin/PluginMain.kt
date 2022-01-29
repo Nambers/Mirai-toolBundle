@@ -70,7 +70,7 @@ object Ocr {
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
-        id = "tech.eritquearcus.RKW", name = "RecallKeyWords", version = "1.4.0"
+        id = "tech.eritquearcus.RKW", name = "RecallKeyWords", version = "1.4.1"
     ) {
         author("Eritque arcus")
 
