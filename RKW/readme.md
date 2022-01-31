@@ -29,7 +29,7 @@ data class Config(
     var keyWords: List<List<String>>,
     // 0 = 撤回, 1 = 禁言 + 撤回, 2 = 禁言, 默认0, 其他不操作
     val type: Int?,
-    // 禁言时间, 要在0s ~ 30d里面, 默认60s
+    // 禁言时间, 要在0s ~ 30d里面, 默认60s, 单位秒
     val muteTime: Int?,
     // 自动把全部英文转换成大写字母处理(包括关键词), 默认false
     val autoUpper: Boolean?
@@ -46,13 +46,17 @@ data class Config(
 ```
 // 下面的 `//` 只是解释作用, 实际上的json不能出现注释
 {
-  "readText": true, // 检查文本信息
-  "notification": false, // 不提醒群主
-  "MaxBorder": 5, // 权值累计超过5就撤回
-  "keyWords": [
-    ["a", "b", "c"], // 权重为1的关键词组
-    ["dddadas"] // 权值为2
-  ]
+  "MaxBorder":4, // 撤回阈值
+  "blockGroupMessage":false, // 不屏蔽群聊信息 [可选配置]
+  "keyWords":[
+    ["啊"] // 撤回关键词, 权值为 1
+  ],
+  "notification":true, // 撤回是通知群主 [可选配置]
+  "readPic":false, // 不检查图片 [可选配置] 默认 false
+  "readText":true, // 检查文字 [可选配置] 默认false
+  "recallItSelf":true, // 撤回机器人自己的信息如果超过撤回阈值 [可选配置]
+  "autoUpper": true, // 自动把英文变成大写处理 [可选配置]
+  "type": 0 // 仅撤回 [可选配置]
 }
 ```
 ## 依赖
