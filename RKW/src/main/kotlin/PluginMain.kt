@@ -19,6 +19,7 @@ package tech.eritquearcus.mirai.plugin.rkw
 
 import com.baidu.aip.ocr.AipOcr
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.contact.PermissionDeniedException
@@ -68,14 +69,12 @@ object Ocr {
     }
 }
 
-object PluginMain : KotlinPlugin(
-    JvmPluginDescription(
-        id = "tech.eritquearcus.RKW", name = "RecallKeyWords", version = "1.4.1"
-    ) {
-        author("Eritque arcus")
-
-    }
+object PluginMain : KotlinPlugin(JvmPluginDescription(
+    id = "tech.eritquearcus.RKW", name = "RecallKeyWords", version = "1.4.1"
 ) {
+    author("Eritque arcus")
+
+}) {
     var seachers: ArrayList<StringSearchEx2> = ArrayList()
     lateinit var config: Config
     private val gid: ArrayDeque<Long> = ArrayDeque()
@@ -120,8 +119,7 @@ object PluginMain : KotlinPlugin(
                 val b = mutableListOf<String>()
                 a.forEach { b.add(it.uppercase(Locale.getDefault())) }
                 tmp.SetKeywords(b)
-            } else
-                tmp.SetKeywords(a)
+            } else tmp.SetKeywords(a)
             seachers.add(tmp)
         }
         if (!File(dataFolder.absolutePath + "/Imgcache/").exists()) File(dataFolder.absolutePath + "/Imgcache/").mkdir()
@@ -132,7 +130,8 @@ object PluginMain : KotlinPlugin(
             }
             if (config.readText!! || config.readPic!!) {
                 if (this.message.toMessageChain().toText().excessBorder()) {
-                    logger.info("取消:${this.message.contentToString()}的发送(可能下面会抛出异常)")
+                    logger.info((if (config.delay != 0L) "在${config.delay}ms后" else "") + "取消:${this.message.contentToString()}的发送(可能下面会抛出异常)")
+                    delay(config.delay ?: 0L)
                     this.cancel()
                 }
             }
@@ -140,6 +139,7 @@ object PluginMain : KotlinPlugin(
         if (config.blockGroupMessage != true) GlobalEventChannel.subscribeAlways<GroupMessageEvent> {
             if (config.readText!! || config.readPic!!) {
                 if (this.message.toText().excessBorder()) {
+                    delay(config.delay ?: 0L)
                     if ((config.type ?: 0) == 0 || (config.type ?: 0) == 1) try {
                         message.source.recall()
                     } catch (e: PermissionDeniedException) {

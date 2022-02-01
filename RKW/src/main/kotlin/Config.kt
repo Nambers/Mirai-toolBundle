@@ -39,7 +39,9 @@ data class Config(
     // 禁言时间, 要在0s ~ 30d里面
     val muteTime: Int? = 60,
     // 全部英文转成大写字母, 默认false
-    val autoUpper: Boolean? = false
+    val autoUpper: Boolean? = false,
+    // 延迟, 单位毫秒, 默认0
+    val delay: Long? = 0
 ){
     // 百度云OCR设置
     data class BaiduSetting(
