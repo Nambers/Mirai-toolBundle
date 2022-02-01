@@ -70,7 +70,7 @@ object Ocr {
 }
 
 object PluginMain : KotlinPlugin(JvmPluginDescription(
-    id = "tech.eritquearcus.RKW", name = "RecallKeyWords", version = "1.4.1"
+    id = "tech.eritquearcus.RKW", name = "RecallKeyWords", version = "1.4.2"
 ) {
     author("Eritque arcus")
 
@@ -126,38 +126,34 @@ object PluginMain : KotlinPlugin(JvmPluginDescription(
         if (config.recallItSelf == true) GlobalEventChannel.subscribeAlways<MessagePreSendEvent> {
             if (config.notification!! && this.message.toString().startsWith("[群${gid.last()}]撤回违规信息[")) {
                 gid.removeLast()
-                return@subscribeAlways
-            }
-            if (config.readText!! || config.readPic!!) {
-                if (this.message.toMessageChain().toText().excessBorder()) {
-                    logger.info((if (config.delay != 0L) "在${config.delay}ms后" else "") + "取消:${this.message.contentToString()}的发送(可能下面会抛出异常)")
-                    delay(config.delay ?: 0L)
-                    this.cancel()
-                }
+            } else if ((config.readText!! || config.readPic!!) && this.message.toMessageChain().toText()
+                    .excessBorder()
+            ) {
+                logger.info((if (config.delay != 0L) "在${config.delay}ms后" else "") + "取消:${this.message.contentToString()}的发送(可能下面会抛出异常)")
+                delay(config.delay ?: 0L)
+                this.cancel()
             }
         }
         if (config.blockGroupMessage != true) GlobalEventChannel.subscribeAlways<GroupMessageEvent> {
-            if (config.readText!! || config.readPic!!) {
-                if (this.message.toText().excessBorder()) {
-                    delay(config.delay ?: 0L)
-                    if ((config.type ?: 0) == 0 || (config.type ?: 0) == 1) try {
-                        message.source.recall()
-                    } catch (e: PermissionDeniedException) {
-                        logger.warning("撤回失败:机器人无权限")
-                    } catch (e: IllegalStateException) {
-                        logger.warning("撤回失败:消息已撤回或对方权限比bot还高")
-                    }
-                    if ((config.type ?: 0) == 1 || (config.type ?: 0) == 2) try {
-                        sender.mute(config.muteTime ?: 60)
-                    } catch (e: PermissionDeniedException) {
-                        logger.warning("禁言失败:机器人无权限")
-                    } catch (e: IllegalStateException) {
-                        logger.error("禁言失败:禁言时间需要在0s ~ 30d, 当前是:${config.muteTime ?: 60}s")
-                    }
-                    if (config.notification!!) {
-                        gid.addFirst(this.group.id)
-                        this.group.owner.sendMessage(MiraiCode.deserializeMiraiCode("[群${this.group.id}]撤回违规信息[${this.message.serializeToMiraiCode()}]来自群成员[${this.sender.id}]"))
-                    }
+            if ((config.readText!! || config.readPic!!) && this.message.toText().excessBorder()) {
+                delay(config.delay ?: 0L)
+                if ((config.type ?: 0) == 0 || (config.type ?: 0) == 1) try {
+                    message.source.recall()
+                } catch (e: PermissionDeniedException) {
+                    logger.warning("撤回失败:机器人无权限")
+                } catch (e: IllegalStateException) {
+                    logger.warning("撤回失败:消息已撤回或对方权限比bot还高")
+                }
+                if ((config.type ?: 0) == 1 || (config.type ?: 0) == 2) try {
+                    sender.mute(config.muteTime ?: 60)
+                } catch (e: PermissionDeniedException) {
+                    logger.warning("禁言失败:机器人无权限")
+                } catch (e: IllegalStateException) {
+                    logger.error("禁言失败:禁言时间需要在0s ~ 30d, 当前是:${config.muteTime ?: 60}s")
+                }
+                if (config.notification!!) {
+                    gid.addFirst(this.group.id)
+                    this.group.owner.sendMessage(MiraiCode.deserializeMiraiCode("[群${this.group.id}]撤回违规信息[${this.message.serializeToMiraiCode()}]来自群成员[${this.sender.id}]"))
                 }
             }
         }
