@@ -17,6 +17,10 @@
  */
 package tech.eritquearcus.mirai.plugin.rkw
 
+import kotlinx.coroutines.delay
+import net.mamoe.mirai.contact.Contact
+import net.mamoe.mirai.contact.PermissionDeniedException
+import net.mamoe.mirai.message.MessageReceipt
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain
@@ -86,4 +90,18 @@ fun String.excessBorder(): Boolean {
         }
     }
     return false
+}
+
+suspend fun <C : Contact> delayRecall(msg: MessageReceipt<C>?, target0: Contact, target1: Contact) {
+    if (msg == null) return
+    if (target0 == target1) {
+        delay(config.delay ?: 0L)
+        try {
+            msg.recall()
+        } catch (e: PermissionDeniedException) {
+            PluginMain.logger.warning("撤回失败:机器人无权限")
+        } catch (e: IllegalStateException) {
+            PluginMain.logger.warning("撤回失败:消息已撤回")
+        }
+    }
 }
