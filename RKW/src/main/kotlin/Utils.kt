@@ -21,6 +21,7 @@ import kotlinx.coroutines.delay
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.message.MessageReceipt
+import net.mamoe.mirai.message.data.ForwardMessage
 import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain
@@ -52,17 +53,17 @@ fun downloadImage(url: String, file: File): File {
 suspend fun MessageChain.toText(): String {
     var plainAll = ""
     var picAll = ""
-    this.forEach {
-        if (it is PlainText && config.readText!!) plainAll += it.contentToString()
-        if (it is Image && config.readPic!!) {
+    this.forEach { msg ->
+        if (msg is PlainText && config.readText!!) plainAll += msg.contentToString()
+        if (msg is Image && config.readPic!!) {
             //图片处理
-            val id = it.imageId.split(".")[0]
+            val id = msg.imageId.split(".")[0]
             val value = PluginMain.imgCache[id]
             if (value != null) {
                 picAll += value
                 PluginMain.logger.info(picAll)
             } else {
-                val url = it.queryUrl()
+                val url = msg.queryUrl()
                 PluginMain.logger.info("取到图片${url}")
                 //用BinaryTest.Excute()来二值化
                 val temp: File = downloadImage(url, File(PluginMain.dataFolder.absolutePath + "/Imgcache/$id.jpg"))
@@ -73,6 +74,11 @@ suspend fun MessageChain.toText(): String {
                 picAll += tempa
                 //自动删除图片缓存
                 temp.delete()
+            }
+        }
+        if (msg is ForwardMessage) {
+            msg.nodeList.forEach {
+                plainAll += it.messageChain.toText()
             }
         }
     }
