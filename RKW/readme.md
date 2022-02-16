@@ -34,7 +34,9 @@ data class Config(
     // 自动把全部英文转换成大写字母处理(包括关键词), 默认false
     val autoUpper: Boolean?,
     // 延时做出操作, 单位毫秒, 默认0
-    val delay: Long? = 0L
+    val delay: Long? = 0L,
+    // 撤回后随机取出其中之一发送
+    val hints: List<String>? = emptyList()
 ) {
     // 百度云OCR设置
     data class BaiduSetting(
@@ -58,7 +60,8 @@ data class Config(
   "readText":true, // 检查文字 [可选配置] 默认false
   "recallItSelf":true, // 撤回机器人自己的信息如果超过撤回阈值 [可选配置]
   "autoUpper": true, // 自动把英文变成大写处理 [可选配置]
-  "type": 0 // 仅撤回 [可选配置]
+  "type": 0, // 仅撤回 [可选配置]
+  "hints":["testA", "testB"] // 撤回后发送 [可选]
 }
 ```
 ## 依赖
