@@ -29,9 +29,8 @@ import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.MessagePostSendEvent
 import net.mamoe.mirai.event.events.MessagePreSendEvent
 import net.mamoe.mirai.message.code.MiraiCode
+import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
-import net.mamoe.mirai.message.data.source
-import net.mamoe.mirai.message.data.toMessageChain
 import org.json.JSONArray
 import org.json.JSONObject
 import toolgood.words.StringSearchEx2
@@ -79,7 +78,7 @@ object PluginMain : KotlinPlugin(JvmPluginDescription(
 }) {
     var seachers: ArrayList<StringSearchEx2> = ArrayList()
     lateinit var config: Config
-    private val gid: ArrayDeque<Long> = ArrayDeque()
+    private val unFilterMsg: ArrayDeque<Message> = ArrayDeque()
 
     //图片结果缓存
     var imgCache: Map<String, String> = mapOf()
@@ -126,10 +125,9 @@ object PluginMain : KotlinPlugin(JvmPluginDescription(
         }
         if (!File(dataFolder.absolutePath + "/Imgcache/").exists()) File(dataFolder.absolutePath + "/Imgcache/").mkdir()
         if (config.recallItSelf == true) GlobalEventChannel.subscribeAlways<MessagePreSendEvent> {
-            if (gid.isNotEmpty() && config.notification!! && this.message.toString()
-                    .startsWith("[群${gid.last()}]撤回违规信息[")
-            ) {
-                gid.removeLast()
+            if (unFilterMsg.isNotEmpty() && config.notification!! && this.message in unFilterMsg) {
+                // 如果在自己发的不被撤回的list中
+                unFilterMsg.remove(this.message)
             } else if ((config.readText!! || config.readPic!!) && this.message.toMessageChain().toText()
                     .excessBorder()
             ) {
@@ -158,9 +156,19 @@ object PluginMain : KotlinPlugin(JvmPluginDescription(
                 } catch (e: IllegalStateException) {
                     logger.error("禁言失败:禁言时间需要在0s ~ 30d, 当前是:${config.muteTime ?: 60}s")
                 }
+                if (config.hints?.isNotEmpty() == true) {
+                    val msg = MessageChainBuilder()
+                        .append(this.sender.at())
+                        .append(PlainText(config.hints!!.random()))
+                        .build()
+                    unFilterMsg.addFirst(msg)
+                    this.group.sendMessage(msg)
+                }
                 if (config.notification!!) {
-                    gid.addFirst(this.group.id)
-                    this.group.owner.sendMessage(MiraiCode.deserializeMiraiCode("[群${this.group.id}]撤回违规信息[${this.message.serializeToMiraiCode()}]来自群成员[${this.sender.id}]"))
+                    val msg =
+                        MiraiCode.deserializeMiraiCode("[群${this.group.id}]撤回违规信息[${this.message.serializeToMiraiCode()}]来自群成员[${this.sender.id}]")
+                    unFilterMsg.addFirst(msg)
+                    this.group.owner.sendMessage(msg)
                 }
             }
         }

@@ -69,7 +69,7 @@ suspend fun MessageChain.toText(): String {
                 val temp: File = downloadImage(url, File(PluginMain.dataFolder.absolutePath + "/Imgcache/$id.jpg"))
                 val tempa = Ocr.main(PluginMain.dataFolder.absolutePath + "/Imgcache/$id.jpg").replace("\n", "")//取消换行
                     .replace(" ", "")//取消空格
-                PluginMain.logger.info("结果$tempa")
+                // PluginMain.logger.info("结果$tempa")
                 PluginMain.imgCache = PluginMain.imgCache.plus(mapOf(id to tempa))
                 picAll += tempa
                 //自动删除图片缓存

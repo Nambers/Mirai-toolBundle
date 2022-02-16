@@ -41,7 +41,8 @@ data class Config(
     // 全部英文转成大写字母, 默认false
     val autoUpper: Boolean? = false,
     // 延迟, 单位毫秒, 默认0
-    val delay: Long? = 0
+    val delay: Long? = 0,
+    val hints: List<String>? = emptyList()
 ){
     // 百度云OCR设置
     data class BaiduSetting(
