@@ -11,7 +11,7 @@ object Recall : CompositeCommand(
     PluginMain, "RKW", description = "RKW指令"
 ) {
     @SubCommand("ch")
-    private suspend fun ch(context: CommandContext) {
+    suspend fun ch(context: CommandContext) {
         val sender = context.sender
         val msg = context.originalMessage
         if (sender !is MemberCommandSenderOnMessage) {
@@ -38,7 +38,7 @@ object Recall : CompositeCommand(
     }
 
     @SubCommand("keyWords")
-    private suspend fun showAllKeyWords(context: CommandContext) {
+    suspend fun showAllKeyWords(context: CommandContext) {
         val sender = context.sender
         if (!sender.hasPermission(PluginMain.perm)) {
             sender.sendMessage("你没有被赋予权限, 权限名: ${PluginMain.perm.name}")
@@ -48,7 +48,7 @@ object Recall : CompositeCommand(
     }
 
     @SubCommand("addKeyWord")
-    private suspend fun addKeyWord(context: CommandContext, keyWord: String, level: Int) {
+    suspend fun addKeyWord(context: CommandContext, keyWord: String, level: Int) {
         val sender = context.sender
         if (!sender.hasPermission(PluginMain.perm)) {
             sender.sendMessage("你没有被赋予权限, 权限名: ${PluginMain.perm.name}")
@@ -61,11 +61,12 @@ object Recall : CompositeCommand(
         }
         Config.keyWords[level - 1].add(keyWord)
         Config.save()
+        reloadSearch()
         sender.sendMessage("添加成功")
     }
 
     @SubCommand("delKeyWord")
-    private suspend fun delKeyWord(context: CommandContext, keyWord: String, level: Int) {
+    suspend fun delKeyWord(context: CommandContext, keyWord: String, level: Int) {
         val sender = context.sender
         if (!sender.hasPermission(PluginMain.perm)) {
             sender.sendMessage("你没有被赋予权限, 权限名: ${PluginMain.perm.name}")
@@ -81,6 +82,7 @@ object Recall : CompositeCommand(
         }
         Config.keyWords[level - 1].remove(keyWord)
         Config.save()
+        reloadSearch()
         sender.sendMessage("删除成功")
     }
 }

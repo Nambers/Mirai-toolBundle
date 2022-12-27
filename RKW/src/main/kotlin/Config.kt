@@ -21,15 +21,16 @@ import kotlinx.serialization.Serializable
 import net.mamoe.mirai.console.data.AutoSavePluginData
 import net.mamoe.mirai.console.data.value
 
-// 百度云OCR设置
-@Serializable
-data class BaiduSetting(
-    val APP_ID: String,
-    val API_KEY: String,
-    val SECRET_KEY: String
-)
 
 object Config : AutoSavePluginData("RKWConfig") {
+    // 百度云OCR设置
+    @Serializable
+    class BaiduSetting(
+        val APP_ID: String = "",
+        val API_KEY: String = "",
+        val SECRET_KEY: String = "",
+    )
+
     // 是否分析文本
     var readText: Boolean by value(false)
 
@@ -52,7 +53,7 @@ object Config : AutoSavePluginData("RKWConfig") {
     val blockGroupMessage: Boolean by value(false)
 
     // 撤回的关键词, 每组关键词的权值=该组的下标
-    var keyWords: MutableList<MutableList<String>> by value(mutableListOf(emptyList<String>().toMutableList()))
+    var keyWords: MutableList<MutableList<String>> by value(emptyList<MutableList<String>>().toMutableList())
 
     // 0 = 撤回, 1 = 禁言 + 撤回, 2 = 禁言, 默认0
     val type: Int by value(0)

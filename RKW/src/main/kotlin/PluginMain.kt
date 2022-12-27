@@ -89,8 +89,9 @@ object PluginMain : KotlinPlugin(JvmPluginDescription(
     var imgCache: Map<String, String> = mapOf()
     override fun onEnable() {
         logger.info("Keywords recall plugin loaded!")
+        Config.reload()
         if (Config.readPic) {
-            if (Config.baiduSetting.APP_ID.isBlank()) {
+            if (Config.baiduSetting.APP_ID.isEmpty()) {
                 logger.error("百度ocr未设置, 读取图片开关关闭")
                 Config.readPic = false
             } else {
@@ -110,15 +111,7 @@ object PluginMain : KotlinPlugin(JvmPluginDescription(
         logger.info("目前关键词有:${Config.keyWords}")
         logger.info("处理模式:${if (Config.type == 1) "撤回 + 禁言" else if (Config.type == 0) "撤回" else if (Config.type == 2) "禁言" else "不处理"}")
         logger.info("自动大写:${Config.autoUpper}")
-        for (a in Config.keyWords) {
-            val tmp = StringSearchEx2()
-            if (Config.autoUpper) {
-                val b = mutableListOf<String>()
-                a.forEach { b.add(it.uppercase(Locale.getDefault())) }
-                tmp.SetKeywords(b)
-            } else tmp.SetKeywords(a)
-            seachers.add(tmp)
-        }
+        reloadSearch()
         if (!File(dataFolder.absolutePath + "/Imgcache/").exists()) File(dataFolder.absolutePath + "/Imgcache/").mkdir()
         if (Config.recallItSelf) GlobalEventChannel.subscribeAlways<MessagePreSendEvent> {
             if (unFilterMsg.isNotEmpty() && Config.notification && this.message in unFilterMsg) {

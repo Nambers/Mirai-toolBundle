@@ -26,6 +26,7 @@ import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.PlainText
+import toolgood.words.StringSearchEx2
 import java.io.File
 import java.net.URL
 import java.util.*
@@ -108,5 +109,18 @@ suspend fun <C : Contact> delayRecall(msg: MessageReceipt<C>?, target0: Contact,
         } catch (e: IllegalStateException) {
             PluginMain.logger.warning("撤回失败:消息已撤回")
         }
+    }
+}
+
+fun reloadSearch() {
+    PluginMain.seachers.clear()
+    for (a in Config.keyWords) {
+        val tmp = StringSearchEx2()
+        if (Config.autoUpper) {
+            val b = mutableListOf<String>()
+            a.forEach { b.add(it.uppercase(Locale.getDefault())) }
+            tmp.SetKeywords(b)
+        } else tmp.SetKeywords(a)
+        PluginMain.seachers.add(tmp)
     }
 }
