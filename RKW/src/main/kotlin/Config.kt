@@ -17,37 +17,53 @@
  */
 package tech.eritquearcus.mirai.plugin.rkw
 
-data class Config(
+import kotlinx.serialization.Serializable
+import net.mamoe.mirai.console.data.AutoSavePluginData
+import net.mamoe.mirai.console.data.value
+
+// 百度云OCR设置
+@Serializable
+data class BaiduSetting(
+    val APP_ID: String,
+    val API_KEY: String,
+    val SECRET_KEY: String
+)
+
+object Config : AutoSavePluginData("RKWConfig") {
     // 是否分析文本
-    var readText: Boolean? = false,
+    var readText: Boolean by value(false)
+
     // 是否用百度云ocr api分析图片(需要在下面配置)
-    var readPic: Boolean? = false,
+    var readPic: Boolean by value(false)
+
     // 百度云ocr配置
-    val baiduSetting: BaiduSetting? = null,
+    val baiduSetting: BaiduSetting by value()
+
     // 撤回的时候通知群主
-    var notification: Boolean? = false,
+    var notification: Boolean by value(false)
+
     // 取消bot自己发送的消息如果超出阈值
-    val recallItSelf: Boolean? = false,
+    val recallItSelf: Boolean by value(false)
+
     // 撤回阈值, 权值累计到多少就撤回
-    val MaxBorder: Int,
+    val MaxBorder: Int by value(10)
+
     // 不处理群聊信息
-    val blockGroupMessage: Boolean? = false,
+    val blockGroupMessage: Boolean by value(false)
+
     // 撤回的关键词, 每组关键词的权值=该组的下标
-    var keyWords: List<List<String>>,
+    var keyWords: MutableList<MutableList<String>> by value(mutableListOf(emptyList<String>().toMutableList()))
+
     // 0 = 撤回, 1 = 禁言 + 撤回, 2 = 禁言, 默认0
-    val type: Int? = 0,
+    val type: Int by value(0)
+
     // 禁言时间, 要在0s ~ 30d里面
-    val muteTime: Int? = 60,
+    val muteTime: Int by value(60)
+
     // 全部英文转成大写字母, 默认false
-    val autoUpper: Boolean? = false,
+    val autoUpper: Boolean by value(false)
+
     // 延迟, 单位毫秒, 默认0
-    val delay: Long? = 0,
-    val hints: List<String>? = emptyList()
-){
-    // 百度云OCR设置
-    data class BaiduSetting(
-        val APP_ID:String,
-        val API_KEY:String,
-        val SECRET_KEY:String
-    )
+    val delay: Long by value(0L)
+    val hints: List<String> by value(emptyList())
 }

@@ -18,7 +18,6 @@
 package tech.eritquearcus.mirai.plugin.rkw
 
 import com.baidu.aip.ocr.AipOcr
-import com.google.gson.Gson
 import kotlinx.coroutines.delay
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.permission.PermissionId
@@ -32,7 +31,6 @@ import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.GroupMessageEvent
 import net.mamoe.mirai.event.events.MessagePostSendEvent
 import net.mamoe.mirai.event.events.MessagePreSendEvent
-import net.mamoe.mirai.message.code.MiraiCode
 import net.mamoe.mirai.message.data.*
 import net.mamoe.mirai.message.data.MessageSource.Key.recall
 import org.json.JSONArray
@@ -80,7 +78,6 @@ object PluginMain : KotlinPlugin(JvmPluginDescription(
     author("Eritque arcus")
 }) {
     var seachers: ArrayList<StringSearchEx2> = ArrayList()
-    lateinit var config: Config
     private val unFilterMsg: ArrayDeque<Message> = ArrayDeque()
 
     @OptIn(ConsoleExperimentalApi::class)
@@ -92,43 +89,30 @@ object PluginMain : KotlinPlugin(JvmPluginDescription(
     var imgCache: Map<String, String> = mapOf()
     override fun onEnable() {
         logger.info("Keywords recall plugin loaded!")
-        val f = File(dataFolder.absolutePath + "/config.json").let {
-            if (!it.isFile || !it.exists()) {
-                logger.error("配置文件(${it.absolutePath})不存在, 自动生成并结束加载插件")
-                it.writeText(
-                    Gson().toJson(
-                        Config(MaxBorder = 5, keyWords = listOf(emptyList()))
-                    )
-                )
-                return
-            } else it
-        }
-        config = Gson().fromJson(f.readText(), Config::class.java)
-        config.readPic = config.readPic ?: false
-        config.readText = config.readText ?: false
-        config.notification = config.notification ?: false
-        if (config.readPic!!) if (config.baiduSetting == null) {
-            logger.error("百度ocr未设置, 读取图片开关关闭")
-            config.readPic = false
-        } else {
-            Ocr.API_KEY = config.baiduSetting!!.API_KEY
-            Ocr.APP_ID = config.baiduSetting!!.APP_ID
-            Ocr.SECRET_KEY = config.baiduSetting!!.SECRET_KEY
+        if (Config.readPic) {
+            if (Config.baiduSetting.APP_ID.isBlank()) {
+                logger.error("百度ocr未设置, 读取图片开关关闭")
+                Config.readPic = false
+            } else {
+                Ocr.API_KEY = Config.baiduSetting.API_KEY
+                Ocr.APP_ID = Config.baiduSetting.APP_ID
+                Ocr.SECRET_KEY = Config.baiduSetting.SECRET_KEY
+            }
         }
         // register
         perm
         Recall.register()
         logger.info("撤回权限名: ${perm.name}")
-        logger.info("配置文件路径${dataFolder.absolutePath}/config.txt")
-        logger.info("文字识别开关${config.readText}")
-        logger.info("图片识别开关${config.readPic}")
-        logger.info("撤回边界值${config.MaxBorder}")
-        logger.info("目前关键词有:${config.keyWords}")
-        logger.info("处理模式:${if (config.type == 1) "撤回 + 禁言" else if (config.type == 0 || config.type == null) "撤回" else if (config.type == 2) "禁言" else "不处理"}")
-        logger.info("自动大写:${config.autoUpper ?: false}")
-        for (a in config.keyWords) {
+        logger.info("配置文件路径${dataFolder.absolutePath}/Config.txt")
+        logger.info("文字识别开关${Config.readText}")
+        logger.info("图片识别开关${Config.readPic}")
+        logger.info("撤回边界值${Config.MaxBorder}")
+        logger.info("目前关键词有:${Config.keyWords}")
+        logger.info("处理模式:${if (Config.type == 1) "撤回 + 禁言" else if (Config.type == 0) "撤回" else if (Config.type == 2) "禁言" else "不处理"}")
+        logger.info("自动大写:${Config.autoUpper}")
+        for (a in Config.keyWords) {
             val tmp = StringSearchEx2()
-            if (config.autoUpper == true) {
+            if (Config.autoUpper) {
                 val b = mutableListOf<String>()
                 a.forEach { b.add(it.uppercase(Locale.getDefault())) }
                 tmp.SetKeywords(b)
@@ -136,49 +120,52 @@ object PluginMain : KotlinPlugin(JvmPluginDescription(
             seachers.add(tmp)
         }
         if (!File(dataFolder.absolutePath + "/Imgcache/").exists()) File(dataFolder.absolutePath + "/Imgcache/").mkdir()
-        if (config.recallItSelf == true) GlobalEventChannel.subscribeAlways<MessagePreSendEvent> {
-            if (unFilterMsg.isNotEmpty() && config.notification!! && this.message in unFilterMsg) {
+        if (Config.recallItSelf) GlobalEventChannel.subscribeAlways<MessagePreSendEvent> {
+            if (unFilterMsg.isNotEmpty() && Config.notification && this.message in unFilterMsg) {
                 // 如果在自己发的不被撤回的list中
                 unFilterMsg.remove(this.message)
-            } else if ((config.readText!! || config.readPic!!) && this.message.toMessageChain().toText()
+            } else if ((Config.readText || Config.readPic) && this.message.toMessageChain().toText()
                     .excessBorder()
             ) {
-                logger.info((if (config.delay != 0L) "在${config.delay}ms后" else "") + "取消:${this.message.contentToString()}的发送(如果是0s可能下面会抛出异常)")
-                if (config.delay == 0L) this.cancel()
+                logger.info((if (Config.delay != 0L) "在${Config.delay}ms后" else "") + "取消:${this.message.contentToString()}的发送(如果是0s可能下面会抛出异常)")
+                if (Config.delay == 0L) this.cancel()
                 else
                     GlobalEventChannel.subscribeOnce<MessagePostSendEvent<Contact>> {
                         delayRecall(this.receipt, this@subscribeAlways.target, this.target)
                     }
             }
         }
-        if (config.blockGroupMessage != true) GlobalEventChannel.subscribeAlways<GroupMessageEvent> {
-            if ((config.readText!! || config.readPic!!) && this.message.toText().excessBorder()) {
-                delay(config.delay ?: 0L)
-                if ((config.type ?: 0) == 0 || (config.type ?: 0) == 1) try {
+        if (!Config.blockGroupMessage) GlobalEventChannel.subscribeAlways<GroupMessageEvent> {
+            if ((Config.readText || Config.readPic) && this.message.toText().excessBorder()) {
+                delay(Config.delay)
+                if (Config.type == 0 || Config.type == 1) try {
                     message.source.recall()
                 } catch (e: PermissionDeniedException) {
                     logger.warning("撤回失败:机器人无权限")
                 } catch (e: IllegalStateException) {
                     logger.warning("撤回失败:消息已撤回")
                 }
-                if ((config.type ?: 0) == 1 || (config.type ?: 0) == 2) try {
-                    sender.mute(config.muteTime ?: 60)
+                if (Config.type == 1 || Config.type == 2) try {
+                    sender.mute(Config.muteTime)
                 } catch (e: PermissionDeniedException) {
                     logger.warning("禁言失败:机器人无权限")
                 } catch (e: IllegalStateException) {
-                    logger.error("禁言失败:禁言时间需要在0s ~ 30d, 当前是:${config.muteTime ?: 60}s")
+                    logger.error("禁言失败:禁言时间需要在0s ~ 30d, 当前是:${Config.muteTime}s")
                 }
-                if (config.hints?.isNotEmpty() == true) {
+                if (Config.hints.isNotEmpty()) {
                     val msg = MessageChainBuilder()
                         .append(this.sender.at())
-                        .append(PlainText(config.hints!!.random()))
+                        .append(PlainText(Config.hints.random()))
                         .build()
                     unFilterMsg.addFirst(msg)
                     this.group.sendMessage(msg)
                 }
-                if (config.notification!!) {
-                    val msg =
-                        MiraiCode.deserializeMiraiCode("[群${this.group.id}]撤回违规信息[${this.message.serializeToMiraiCode()}]来自群成员[${this.sender.id}]")
+                if (Config.notification) {
+                    val msg = buildForwardMessage(this.group) {
+                        this.add(bot, PlainText("[群${this@subscribeAlways.group.id}]撤回违规信息"))
+                        this.add(this@subscribeAlways.sender, this@subscribeAlways.message)
+                        this.add(bot, PlainText("来自群成员[${this@subscribeAlways.sender.id}]"))
+                    }
                     unFilterMsg.addFirst(msg)
                     this.group.owner.sendMessage(msg)
                 }

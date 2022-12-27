@@ -26,7 +26,6 @@ import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import net.mamoe.mirai.message.data.MessageChain
 import net.mamoe.mirai.message.data.PlainText
-import tech.eritquearcus.mirai.plugin.rkw.PluginMain.config
 import java.io.File
 import java.net.URL
 import java.util.*
@@ -54,8 +53,8 @@ suspend fun MessageChain.toText(): String {
     var plainAll = ""
     var picAll = ""
     this.forEach { msg ->
-        if (msg is PlainText && config.readText!!) plainAll += msg.contentToString()
-        if (msg is Image && config.readPic!!) {
+        if (msg is PlainText && Config.readText) plainAll += msg.contentToString()
+        if (msg is Image && Config.readPic) {
             //图片处理
             val id = msg.imageId.split(".")[0]
             val value = PluginMain.imgCache[id]
@@ -90,8 +89,8 @@ fun String.excessBorder(): Boolean {
     var allp = 0
     for (sc in PluginMain.seachers) {
         i += 1
-        allp += sc.FindAll(if (config.autoUpper == true) this.uppercase(Locale.getDefault()) else this).size * i
-        if (allp > config.MaxBorder) {
+        allp += sc.FindAll(if (Config.autoUpper) this.uppercase(Locale.getDefault()) else this).size * i
+        if (allp > Config.MaxBorder) {
             return true
         }
     }
@@ -101,7 +100,7 @@ fun String.excessBorder(): Boolean {
 suspend fun <C : Contact> delayRecall(msg: MessageReceipt<C>?, target0: Contact, target1: Contact) {
     if (msg == null) return
     if (target0 == target1) {
-        delay(config.delay ?: 0L)
+        delay(Config.delay)
         try {
             msg.recall()
         } catch (e: PermissionDeniedException) {
