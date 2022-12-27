@@ -20,8 +20,12 @@ package tech.eritquearcus.mirai.plugin.rkw
 import com.baidu.aip.ocr.AipOcr
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
+import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
+import net.mamoe.mirai.console.permission.PermissionId
+import net.mamoe.mirai.console.permission.PermissionService
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
+import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.PermissionDeniedException
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -74,11 +78,15 @@ object PluginMain : KotlinPlugin(JvmPluginDescription(
     id = "tech.eritquearcus.RKW", name = "RecallKeyWords", version = "1.4.3"
 ) {
     author("Eritque arcus")
-
 }) {
     var seachers: ArrayList<StringSearchEx2> = ArrayList()
     lateinit var config: Config
     private val unFilterMsg: ArrayDeque<Message> = ArrayDeque()
+
+    @OptIn(ConsoleExperimentalApi::class)
+    val perm: PermissionId by lazy {
+        PermissionService.INSTANCE.allocatePermissionIdForPlugin(PluginMain, "ch")
+    }
 
     //图片结果缓存
     var imgCache: Map<String, String> = mapOf()
@@ -107,6 +115,10 @@ object PluginMain : KotlinPlugin(JvmPluginDescription(
             Ocr.APP_ID = config.baiduSetting!!.APP_ID
             Ocr.SECRET_KEY = config.baiduSetting!!.SECRET_KEY
         }
+        // register
+        perm
+        Recall.register()
+        logger.info("撤回权限名: ${perm.name}")
         logger.info("配置文件路径${dataFolder.absolutePath}/config.txt")
         logger.info("文字识别开关${config.readText}")
         logger.info("图片识别开关${config.readPic}")
